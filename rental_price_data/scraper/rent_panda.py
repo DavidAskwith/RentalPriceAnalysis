@@ -6,7 +6,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
 
-from listing import Listing
+from ..listing import Listing
+from .processor import sanitizer
 
 def get_page_source():
 
@@ -39,7 +40,6 @@ def get_page_source():
     options.add_argument('--headless')
     driver = webdriver.Chrome(chrome_options=options)
 
-
     driver.get("https://www.rentpanda.ca/")
     # click thunder bay button
     search_box = driver.find_element(By.ID, "searchLocation")
@@ -53,15 +53,12 @@ def get_page_source():
 
 def scrape(page_source):
 
-    def sanitize_price(raw_price):
-        return raw_price.replace('$', '').replace(',', '')
-
     def get_listings(raw_listings):
         listings = []
 
         for raw_listing in raw_listings:
             address = raw_listings[0].select(".property-title")[0].string
-            price = int(sanitize_price(raw_listings[0].div.h2.span.span.get_text()))
+            price = raw_listings[0].div.h2.span.span.string
             utilities = raw_listings[0].select(".utilities")[0].b.string
 
             specification = raw_listings[0].select(".specification")[0].div
@@ -69,7 +66,7 @@ def scrape(page_source):
             baths = specification.contents[1].span.string.replace(" Bath", "")
             unit_type = specification.contents[2].span.string
 
-            listing = Listing(address, price, utilities, beds, baths, unit_type)
+            listing = sanitizer.sanitize(Listing(address, price, utilities, beds, baths, unit_type))
             listings.append(listing)
 
         return listings
