@@ -8,11 +8,12 @@ import time
 
 from ..listing import Listing
 from .processor import sanitizer
+from .processor import geodata
 
 def get_page_source():
 
     def scroll_listings(driver):
-        SCROLL_PAUSE_TIME = 0.5
+        SCROLL_PAUSE_TIME = 3
 
         SCROLL_CONTAINER_SELECTOR = "document.getElementsByClassName(\"profile-container\")[0]"
         SCROLL_HEIGHT_SELECTOR = f"{SCROLL_CONTAINER_SELECTOR}.scrollHeight"
@@ -57,16 +58,26 @@ def scrape(page_source):
         listings = []
 
         for raw_listing in raw_listings:
-            address = raw_listings[0].select(".property-title")[0].string
-            price = raw_listings[0].div.h2.span.span.string
-            utilities = raw_listings[0].select(".utilities")[0].b.string
+            address = raw_listing.select(".property-title")[0].string
+            price = sanitizer.get_numerical_price(raw_listing.div.h2.span.span.string)
+            utilities = raw_listing.select(".utilities")[0].b.string
 
-            specification = raw_listings[0].select(".specification")[0].div
-            beds =  specification.div.span.string.replace(" Bed", "")
-            baths = specification.contents[1].span.string.replace(" Bath", "")
-            unit_type = specification.contents[2].span.string
+            specification = raw_listing.select(".specification")[0].div
 
-            listing = sanitizer.sanitize(Listing(address, price, utilities, beds, baths, unit_type))
+            #handles case where room and baths don't exist for room only type
+            first_spec =  specification.contents[0].span.string
+            if first_spec != "Room for Rent":
+                beds =  specification.contents[0].span.string.replace(" Bed", "")
+                baths = specification.contents[1].span.string.replace(" Bath", "")
+                unit_type = specification.contents[2].span.string
+            else:
+                beds = 0
+                beths = 0
+                unit_type = first_spec
+
+
+            listing = Listing(address, price, utilities, beds, baths, unit_type)
+            listing = geodata.update_listing_with_geodata(listing)
             listings.append(listing)
 
         return listings
