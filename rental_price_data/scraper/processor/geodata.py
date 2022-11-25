@@ -12,8 +12,8 @@ def update_listing_with_geodata(listing):
         r = requests.get(f"https://maps.googleapis.com/maps/api/geocode/json?address={listing.address}&key={google_api_key}")
         geodata = r.json()
         result = geodata["results"][0]
-        if len(result) == 0:
-            raise
+        if geodata["status"] != "OK" or  geodata["status"] != "ZERO_RESULTS":
+            raise Exception(geodata["error_message"])
         else:
             return result
 
@@ -35,11 +35,8 @@ def update_listing_with_geodata(listing):
         return "OUTSIDE WARDS"
 
 
-    try:
         geodata = get_listing_geodata(listing)
         listing.coordinates = get_coordinates(geodata)
         listing.ward = get_ward(listing.coordinates)
         listing.address = geodata["formatted_address"]
-        return listing
-    except:
         return listing

@@ -1,5 +1,7 @@
 class Listing:
   def __init__(self, address, price, utilities, beds, baths, unit_type, ward=None, coordinates=None):
+    # Core Values
+    # Populated from all sites due to relevance in stat calculations
     self.address = address
     self.price = price
     self.utilities = utilities
@@ -8,3 +10,5 @@ class Listing:
     self.unit_type = unit_type
     self.ward = ward
     self.coordinates = coordinates
+
+    # Ancillary Values

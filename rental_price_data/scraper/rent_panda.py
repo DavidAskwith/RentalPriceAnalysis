@@ -22,7 +22,8 @@ def get_page_source():
 
         while True:
             # Scroll down to bottom
-            driver.execute_script(f"{SCROLL_CONTAINER_SELECTOR}.scrollTo(0, {SCROLL_HEIGHT_SELECTOR});")
+            # driver.execute_script(f"{SCROLL_CONTAINER_SELECTOR}.scrollTo(0, {SCROLL_HEIGHT_SELECTOR});")
+            search_box = driver.find_element(By.CLASS_NAME, "listLoad").click()
 
             # Wait to load page
             time.sleep(SCROLL_PAUSE_TIME)
@@ -41,7 +42,7 @@ def get_page_source():
     options.add_argument('--headless')
     driver = webdriver.Chrome(chrome_options=options)
 
-    driver.get("https://www.rentpanda.ca/")
+    driver.get("https://www.rentpanda.ca/search-result")
     # click thunder bay button
     search_box = driver.find_element(By.ID, "searchLocation")
     search_box.send_keys("Thunder Bay, ON, Canada")
