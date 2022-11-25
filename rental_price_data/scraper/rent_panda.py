@@ -1,7 +1,6 @@
 from requests import get
 from bs4 import BeautifulSoup
 
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
@@ -9,6 +8,7 @@ import time
 from ..listing import Listing
 from .processor import sanitizer
 from .processor import geodata
+from .utilities import get_web_driver
 
 def get_page_source():
 
@@ -35,14 +35,9 @@ def get_page_source():
                 break
             last_height = new_height
 
-
-    options = webdriver.ChromeOptions()
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('--incognito')
-    options.add_argument('--headless')
-    driver = webdriver.Chrome(chrome_options=options)
-
+    driver = get_web_driver()
     driver.get("https://www.rentpanda.ca/search-result")
+
     # click thunder bay button
     search_box = driver.find_element(By.ID, "searchLocation")
     search_box.send_keys("Thunder Bay, ON, Canada")
