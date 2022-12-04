@@ -69,7 +69,7 @@ def scrape(page_source):
             else:
                 beds = 0
                 beths = 0
-                unit_type = first_spec
+                unit_type = "Room"
 
 
             listing = Listing(address, price, utilities, beds, baths, unit_type)

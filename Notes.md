@@ -4,3 +4,16 @@ https://services5.arcgis.com/h9xShea49ZANgOtx/arcgis/rest/services/Wards_Feature
 # Running
 
 * python rental_price_data/ from this dir
+
+# Data Definitions
+## Utilities (included)
+* Heat,
+* Hydro
+* Water
+
+## Property type
+* Unit
+* Full Property
+
+
+
