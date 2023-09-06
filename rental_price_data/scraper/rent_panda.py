@@ -55,13 +55,17 @@ def scrape(page_source):
         listings = []
 
         for raw_listing in raw_listings:
+            # todo: log
+            print() # Seperation for listing
+            print(raw_listing)
+
             address = raw_listing.select(".property-title")[0].string
             price = sanitizer.get_numerical_price(raw_listing.div.h2.span.span.string)
             utilities = raw_listing.select(".utilities")[0].b.string
 
             specification = raw_listing.select(".specification")[0].div
 
-            #handles case where room and baths don't exist for room only type
+            # handles case where room and baths don't exist for room only type
             first_spec =  specification.contents[0].span.string
             if first_spec != "Room for Rent":
                 beds =  specification.contents[0].span.string.replace(" Bed", "")
