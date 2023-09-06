@@ -1,21 +1,36 @@
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
+from ..scraper_error import ScraperError
 import requests
 
+
 from .wards import ward_polygons
-from rental_price_data.config import google_api_key
+from config import google_api_key
 
 
 def update_listing_with_geodata(listing):
 
     def get_listing_geodata(listing):
-        r = requests.get(f"https://maps.googleapis.com/maps/api/geocode/json?address={listing.address}&key={google_api_key}")
+        url = f"https://maps.googleapis.com/maps/api/geocode/json?address={listing.address}&key={google_api_key}"
+        #todo log
+        print(url)
+
+        r = requests.get(url)
+
+        if r.status_code != 200:
+            raise ScraperError("Geodata API Failure");
+
         geodata = r.json()
+
+        if geodata["status"] == "ZERO_RESULTS":
+            raise ScraperError("No Results Found");
+
+        if geodata["status"] != "OK":
+            raise ScraperError(geodata["error_message"]);
+
         result = geodata["results"][0]
-        if geodata["status"] != "OK" or  geodata["status"] != "ZERO_RESULTS":
-            raise Exception(geodata["error_message"])
-        else:
-            return result
+        return result
+
 
     def get_coordinates(geodata):
         lat = geodata["geometry"]["location"]["lat"]
@@ -35,8 +50,9 @@ def update_listing_with_geodata(listing):
         return "OUTSIDE WARDS"
 
 
-        geodata = get_listing_geodata(listing)
-        listing.coordinates = get_coordinates(geodata)
-        listing.ward = get_ward(listing.coordinates)
-        listing.address = geodata["formatted_address"]
-        return listing
+    geodata = get_listing_geodata(listing)
+    listing.coordinates = get_coordinates(geodata)
+    listing.ward = get_ward(listing.coordinates)
+    listing.address = geodata["formatted_address"]
+
+    return listing

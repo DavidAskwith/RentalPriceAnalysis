@@ -5,7 +5,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
 
-from ..listing import Listing
+from listing import Listing
+from .scraper_error import ScraperError
 from .processor import sanitizer
 from .processor import geodata
 from .utilities import get_web_driver
@@ -35,7 +36,7 @@ def get_page_source():
                 break
             last_height = new_height
 
-    driver = get_web_driver()
+    driver = get_web_driver(False)
     driver.get("https://www.rentpanda.ca/search-result")
 
     # click thunder bay button
@@ -73,8 +74,13 @@ def scrape(page_source):
 
 
             listing = Listing(address, price, utilities, beds, baths, unit_type)
-            listing = geodata.update_listing_with_geodata(listing)
-            listings.append(listing)
+            try:
+                listing = geodata.update_listing_with_geodata(listing)
+                listings.append(listing)
+            # catch only the exceptions thrown in app
+            except ScraperError as e: 
+                #TODO LOG
+                print(e)  
 
         return listings
 

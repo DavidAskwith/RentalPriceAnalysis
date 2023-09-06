@@ -8,7 +8,14 @@ class Listing:
     self.beds = beds
     self.baths = baths
     self.unit_type = unit_type
-    self.ward = ward
-    self.coordinates = coordinates
+    if ward is None:
+        self.ward = ward
+    else:
+        self.ward = ""
+
+    if coordinates is None:
+        self.coordinates = coordinates
+    else:
+        self.ward = ""
 
     # Ancillary Values

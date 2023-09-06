@@ -1,11 +1,11 @@
-from .scraper import rent_panda
+from scraper import rent_panda
 import csv
-from datetime import datetime
+import datetime
 
 source = rent_panda.get_page_source()
 listings = rent_panda.scrape(source)
 
-now = datetime.now()
+now = datetime.datetime.now()
 nowFormatted = now.strftime("%d%m%Y")
 
 with open(f"./data/RentalData_{nowFormatted}.csv", "w",) as csvfile:
