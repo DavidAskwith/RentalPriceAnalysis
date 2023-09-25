@@ -12,5 +12,3 @@ Any data associated to rental in Thunder Bay is derived from a very small data s
 ### Analysis
 * Python
 * Pandas
-
-
