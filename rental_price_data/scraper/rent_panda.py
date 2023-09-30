@@ -55,35 +55,39 @@ def scrape(page_source):
         listings = []
 
         for raw_listing in raw_listings:
-            # todo: log
-            print() # Seperation for listing
-            print(raw_listing)
 
-            address = raw_listing.select(".property-title")[0].string
-            price = sanitizer.get_numerical_price(raw_listing.div.h2.span.span.string)
-            utilities = raw_listing.select(".utilities")[0].b.string
-
-            specification = raw_listing.select(".specification")[0].div
-
-            # handles case where room and baths don't exist for room only type
-            first_spec =  specification.contents[0].span.string
-            if first_spec != "Room for Rent":
-                beds =  specification.contents[0].span.string.replace(" Bed", "")
-                baths = specification.contents[1].span.string.replace(" Bath", "")
-                unit_type = specification.contents[2].span.string
-            else:
-                beds = 0
-                beths = 0
-                unit_type = "Room"
-
-
-            listing = Listing(address, price, utilities, beds, baths, unit_type)
             try:
-                listing = geodata.update_listing_with_geodata(listing)
+                address = raw_listing.select(".property-title")[0].string
+                price = sanitizer.get_numerical_price(raw_listing.div.h2.span.span.string)
+                utilities = raw_listing.select(".utilities")[0].b.string
+
+                specification = raw_listing.select(".specification")[0].div
+
+                # handles case where room and baths don't exist for room only type
+                first_spec =  specification.contents[0].span.string
+                if first_spec != "Room for Rent":
+                    beds =  specification.contents[0].span.string.replace(" Bed", "")
+                    baths = specification.contents[1].span.string.replace(" Bath", "")
+                    unit_type = specification.contents[2].span.string
+                else:
+                    beds = 0
+                    beths = 0
+                    unit_type = "Room"
+
+
+                listing = Listing(address, price, utilities, beds, baths, unit_type)
+                try:
+                    listing = geodata.update_listing_with_geodata(listing)
+                except ScraperError as e: 
+                    print(e)
+
                 listings.append(listing)
+
             # catch only the exceptions thrown in app
-            except ScraperError as e: 
+            except Exception as e: 
                 #TODO LOG
+                print() # Seperation for listing
+                print(raw_listing)
                 print(e)  
 
         return listings
