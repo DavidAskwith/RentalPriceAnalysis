@@ -87,28 +87,33 @@ def scrape(page_sources):
     for page_source in page_sources:
         raw_listing = BeautifulSoup(page_source, 'html.parser')
 
+        print()
+        print(raw_listing)
+        print()
+
         try:
 
-            address = raw_listing.div.div.next_sibling.span.string
-            price = sanitizer.get_numerical_price(raw_listing.div.div.div.div.span.string)
-            utilities = None
-
-            beds_baths_raw = ""
+            # address = raw_listing.div.div.next_sibling.span.string
+            # price = sanitizer.get_numerical_price(raw_listing.div.div.div.div.span.string)
+            # utilities = None
+            #
+            # beds_baths_raw = ""
             # beds =  specification.contents[0].span.string.replace(" Bed", "")
             # baths = specification.contents[1].span.string.replace(" Bath", "")
             # unit_type = specification.contents[2].span.string
 
             # Ancillary values
-            title = raw_listing.div.h1.span.string
+            # title = raw_listing.div.h1.span.string
 
-            listing = Listing(address, price, utilities)
+            print()
 
             try: 
-                listing = geodata.update_listing_with_geodata(listing)
+                # listing = geodata.update_listing_with_geodata(listing)
+                print()
             except ScraperError as e: 
                 print(e)
 
-            listings.append(listing)
+            # listings.append(listing)
 
         except Exception as e: 
             #TODO LOG
