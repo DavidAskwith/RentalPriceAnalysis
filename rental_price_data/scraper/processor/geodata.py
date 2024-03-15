@@ -12,21 +12,24 @@ def update_listing_with_geodata(listing):
 
     def get_listing_geodata(listing):
         url = f"https://maps.googleapis.com/maps/api/geocode/json?address={listing.address}&key={google_api_key}"
-        #todo log
-        print(url)
-
         r = requests.get(url)
 
         if r.status_code != 200:
-            raise ScraperError("Geodata API Failure");
+            # todo log
+            print(url)
+            raise ScraperError("Geodata API Failure")
 
         geodata = r.json()
 
         if geodata["status"] == "ZERO_RESULTS":
-            raise ScraperError("No Results Found");
+            # todo log
+            print(url)
+            raise ScraperError("No Results Found")
 
         if geodata["status"] != "OK":
-            raise ScraperError(geodata["error_message"]);
+            # todo log
+            print(url)
+            raise ScraperError(geodata["error_message"])
 
         result = geodata["results"][0]
         return result
