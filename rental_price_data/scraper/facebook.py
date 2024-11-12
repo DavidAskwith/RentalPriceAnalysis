@@ -9,7 +9,8 @@ from .processor import geodata
 from .scraper_error import ScraperError
 import config as config
 from .utilities import get_web_driver
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 def get_page_source():
     def login(driver):
@@ -19,11 +20,11 @@ def get_page_source():
         password = driver.find_element(By.NAME, "pass")
         password.send_keys(config.facebook_password)
 
-        submit = driver.find_element(By.ID, "loginbutton")
+        submit = driver.find_element(By.xpath, "//*[text()='Log in']")
         submit.click()
 
     def scroll_listings(driver):
-        SCROLL_PAUSE_TIME = 3
+        SCROLL_PAUSE_TIME = 5
 
         SCROLL_CONTAINER_SELECTOR = "document\
                 .querySelector('.x1glzykd.x1c4vz4f.xs83m0k')"
@@ -36,6 +37,7 @@ def get_page_source():
             driver.execute_script(f"window.scrollTo(0, {SCROLL_HEIGHT_SELECTOR});")
 
             # Wait to load page
+
             time.sleep(SCROLL_PAUSE_TIME)
 
             # Calculate new scroll height and compare with last scroll height
@@ -51,29 +53,30 @@ def get_page_source():
         raw_listings = []
 
         for listing_in_list in listings_in_list:
-            try: 
+            # try: 
                 listing_in_list.click()
-                time.sleep(3)
+                time.sleep(12)
 
-                raw_html = driver.find_element(By.CSS_SELECTOR, ".x78zum5.x1iyjqo2.x1n2onr6.xdt5ytf").get_attribute("innerHTML")
+                raw_html = driver.find_element(By.XPATH, "//span[text()='Rentals']/../../../..").get_attribute("innerHTML") 
+                print(raw_html)
                 raw_listings.append(raw_html)
                 driver.back()
-                time.sleep(3)
-            except Exception as e:
+                time.sleep(15)
+            # except Exception as e:
                 # TODO Log 
-                print()
-                print(listing_in_list)
-                print(e)
+                # print()
+                # print(listing_in_list)
+                # print(e)
 
         return raw_listings
 
     driver = get_web_driver(False)
 
     driver.get("https://www.facebook.com/marketplace/category/propertyrentals?exact=false&latitude=48.4175&longitude=-89.2645&radius=9")
-    time.sleep(5)
+    time.sleep(10)
 
     login(driver)
-    time.sleep(5)
+    time.sleep(30)
 
     scroll_listings(driver)
 
