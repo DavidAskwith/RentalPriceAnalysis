@@ -6,4 +6,4 @@ def get_web_driver(headless=True):
     options.add_argument('--incognito')
     if headless:
         options.add_argument('--headless')
-    return webdriver.Chrome(chrome_options=options)
+    return webdriver.Chrome(options)
